@@ -60,7 +60,7 @@ else:
         fig.update_layout(
             mapbox_style="carto-positron",
             title=f"{variable} — {fecha_dt.strftime('%B %Y')}",
-            height=700 
+            height=700, 
             weight= 1000# Ajusta la altura solo del mapa
         )
     
