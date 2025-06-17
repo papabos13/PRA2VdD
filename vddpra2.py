@@ -6,14 +6,14 @@ import plotly.express as px
 # ---------- CARGAR DATOS ----------
 @st.cache_data
 def cargar_datos(): 
-    url = "https://drive.google.com/uc?id=1YM_KDkRtAXAs1SfSemr3u4OM2J0vRyf7"
+    url = "https://drive.google.com/uc?id=1XTtIZYexn4m584TUBLaW0ketFT83iDQn"
     df_final = pd.read_csv(url, parse_dates=["month"])
     return df_final
 
 df_final = cargar_datos()
 
 # ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Visualización climática por capitales")
+st.title("🌍 Visualización climática histórica por capitales")
 
 variables_disponibles = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
@@ -25,15 +25,18 @@ variables_disponibles = [
 ]
 
 variable = st.selectbox("📊 Variable climática:", variables_disponibles)
+rel_variable = f"rel_{variable}_historico"
 
-# ---------- MAPA ANIMADO ----------
+# ---------- CREAR MAPA ----------
+df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
+
 fig = px.scatter_mapbox(
     df_final,
     lat="latitude",
     lon="longitude",
+    color=rel_variable,
     size=df_final[variable].abs(),
-    color="rel_value_historico",
-    animation_frame=df_final["month"].dt.strftime("%Y-%m"),
+    animation_frame="month_str",
     hover_name="city_name",
     hover_data=["country_name", variable],
     color_continuous_scale="RdBu_r",
@@ -49,5 +52,3 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=False)
-
-
