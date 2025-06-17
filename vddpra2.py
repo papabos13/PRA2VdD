@@ -13,7 +13,7 @@ import plotly.express as px
 
 @st.cache_data
 def cargar_datos():
-    url = "https://drive.google.com/file/d/1c3Ok49GNhWxgdDAxOPISMTDUd9SyWE2v/view?usp=sharing"
+    url = "https://drive.google.com/uc?id=1c3Ok49GNhWxgdDAxOPISMTDUd9SyWE2v"
     df = pd.read_csv(url, parse_dates=["month"])
     return df
 
