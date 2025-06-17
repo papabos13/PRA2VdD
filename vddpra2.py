@@ -13,8 +13,10 @@ import plotly.express as px
 
 @st.cache_data
 def cargar_datos():
-    df = pd.read_csv("capitals_climate_monthly.csv", parse_dates=["month"])
+    url = "https://drive.google.com/file/d/1c3Ok49GNhWxgdDAxOPISMTDUd9SyWE2v/view?usp=sharing"
+    df = pd.read_csv(url, parse_dates=["month"])
     return df
+
 
 df = cargar_datos()
 
