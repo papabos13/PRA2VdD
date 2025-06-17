@@ -1,19 +1,18 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ---------- CARGAR DATOS ----------
 @st.cache_data
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1c3Ok49GNhWxgdDAxOPISMTDUd9SyWE2v"
     df = pd.read_csv(url, parse_dates=["month"])
+    df["year"] = df["month"].dt.year
+    df["month_num"] = df["month"].dt.month
     return df
 
 df = cargar_datos()
 
-# ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Evolución climática por capitales del mundo")
+st.title("🌍 Visualización climática por capitales")
 
 variables_disponibles = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
@@ -26,22 +25,34 @@ variables_disponibles = [
 
 variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 
-# ---------- NORMALIZACIÓN MENSUAL POR CAPITAL ----------
-df["month_str"] = df["month"].dt.strftime("%Y-%m")
+# Ordenamos por ciudad y fecha para garantizar el orden cronológico
+df.sort_values(by=["city_name", "month"], inplace=True)
 
-# Normalizamos cada ciudad respecto a su propio histórico mensual
-df["rel_value"] = df.groupby(["city_name", df["month"].dt.month])[variable].transform(
-    lambda x: (x - x.mean()) / x.std() if x.std() != 0 else 0
-)
+# Agrupamos por ciudad y mes para evitar cálculos innecesarios
+rel_values = []
+for (ciudad, mes), grupo in df.groupby(["city_name", "month_num"]):
+    historico = []
+    for i, fila in grupo.iterrows():
+        pasado = [v for v in historico if pd.notnull(v)]
+        if len(pasado) > 1:
+            media = sum(pasado) / len(pasado)
+            std = pd.Series(pasado).std()
+            valor = (fila[variable] - media) / std if std != 0 else None
+        else:
+            valor = None
+        rel_values.append(valor)
+        historico.append(fila[variable])
 
-# ---------- MAPA CON ANIMACIÓN ----------
+df["rel_value_historico"] = rel_values
+
+# Crear animación con Plotly
 fig = px.scatter_mapbox(
     df,
     lat="latitude",
     lon="longitude",
     size=df[variable].abs(),
-    color="rel_value",
-    animation_frame="month_str",
+    color="rel_value_historico",
+    animation_frame=df["month"].dt.strftime("%Y-%m"),
     hover_name="city_name",
     hover_data=["country_name", variable],
     color_continuous_scale="RdBu_r",
@@ -51,11 +62,12 @@ fig = px.scatter_mapbox(
 
 fig.update_layout(
     mapbox_style="carto-positron",
-    title=f"Evolución mensual de {variable} normalizada por ciudad",
+    title=f"Evolución histórica de {variable} respecto a datos anteriores",
     height=750,
     width=1100
 )
 
 st.plotly_chart(fig, use_container_width=False)
+
 
 
