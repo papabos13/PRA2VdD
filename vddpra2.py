@@ -56,11 +56,14 @@ else:
         zoom=1
     )
 
+    with st.container():
     fig.update_layout(
-    mapbox_style="carto-positron",
-    title=f"{variable} — {fecha_dt.strftime('%B %Y')}",
-    width=1400,      # Puedes aumentar más si quieres
-    height=800
+        mapbox_style="carto-positron",
+        title=f"{variable} — {fecha_dt.strftime('%B %Y')}",
+        height=700  # Ajusta la altura solo del mapa
     )
+
+    st.plotly_chart(fig, use_container_width=True)
+
 
 st.plotly_chart(fig, use_container_width=False)
