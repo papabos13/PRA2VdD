@@ -13,7 +13,7 @@ def cargar_datos():
 df = cargar_datos()
 
 # ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Visualización climática por capitales")
+st.title("🌍 Evolución climática por capitales del mundo")
 
 variables_disponibles = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
@@ -26,18 +26,22 @@ variables_disponibles = [
 
 variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 
-# ---------- NORMALIZAR Y ANIMACIÓN ----------
-df["rel_value"] = df.groupby("month")[variable].transform(
-    lambda x: (x - x.mean()) / x.std()
+# ---------- NORMALIZACIÓN MENSUAL POR CAPITAL ----------
+df["month_str"] = df["month"].dt.strftime("%Y-%m")
+
+# Normalizamos cada ciudad respecto a su propio histórico mensual
+df["rel_value"] = df.groupby(["city_name", df["month"].dt.month])[variable].transform(
+    lambda x: (x - x.mean()) / x.std() if x.std() != 0 else 0
 )
 
+# ---------- MAPA CON ANIMACIÓN ----------
 fig = px.scatter_mapbox(
     df,
     lat="latitude",
     lon="longitude",
     size=df[variable].abs(),
     color="rel_value",
-    animation_frame=df["month"].dt.strftime("%Y-%m"),
+    animation_frame="month_str",
     hover_name="city_name",
     hover_data=["country_name", variable],
     color_continuous_scale="RdBu_r",
@@ -47,10 +51,11 @@ fig = px.scatter_mapbox(
 
 fig.update_layout(
     mapbox_style="carto-positron",
-    title=f"Evolución temporal de {variable}",
+    title=f"Evolución mensual de {variable} normalizada por ciudad",
     height=750,
     width=1100
 )
 
 st.plotly_chart(fig, use_container_width=False)
+
 
