@@ -26,10 +26,7 @@ variables_disponibles = [
 
 variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 
-# ---------- NORMALIZAR Y ANIMACIÓN ----------
-df["rel_value"] = df.groupby("month")[variable].transform(
-    lambda x: (x - x.mean()) / x.std()
-)
+
 
 # --- OPCIÓN 3: ANOMALÍA RESPECTO AL PROMEDIO HISTÓRICO DE CADA CIUDAD POR MES ---
 # Crear columna con solo mes-día (sin año) para agrupar todos los años del mismo mes
