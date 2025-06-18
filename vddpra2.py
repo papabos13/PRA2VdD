@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit as st
 import pandas as pd
 import plotly.express as px
 
@@ -12,8 +11,8 @@ st.title("🌍 Animación del clima mensual en capitales del mundo")
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1MXhkIsh9Eeq1OEhXuWp8rdiS-TZgR_8n"
     df = pd.read_csv(url, parse_dates=["month"])
-    # Agregamos columna para animación (formato YYYY-MM)
     df["fecha_str"] = df["month"].dt.strftime("%Y-%m")
+    df = df.sort_values(by=["month"])  # ORDENAR correctamente por tiempo
     return df
 
 df = cargar_datos()
@@ -44,21 +43,26 @@ else:
 
 color_var = f"rel_{variable}"
 
-# ---------- MAPA CON ANIMACIÓN ----------
-fig = px.scatter_geo(
-    df,
-    lat="latitude",
-    lon="longitude",
-    hover_name="city_name",
-    size=size_var,
-    color=color_var,
-    color_continuous_scale="RdBu",
-    animation_frame="fecha_str",
-    projection="natural earth",
-    title=f"Evolución de {variable} mensual (1950–2024)"
-)
+# ---------- MAPA CON ANIMACIÓN (MAPBOX) ----------
+try:
+    fig = px.scatter_mapbox(
+        df,
+        lat="latitude",
+        lon="longitude",
+        hover_name="city_name",
+        size=size_var,
+        color=color_var,
+        animation_frame="fecha_str",
+        size_max=25,
+        zoom=1,
+        mapbox_style="open-street-map",
+        color_continuous_scale="RdBu",
+        title=f"Evolución de {variable} mensual (1950–2024)"
+    )
 
-fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
+    fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
+    st.plotly_chart(fig, use_container_width=True)
 
-# ---------- VISUALIZACIÓN ----------
-st.plotly_chart(fig, use_container_width=True)
+except Exception as e:
+    st.error(f"❌ Error al generar el mapa: {e}")
+
