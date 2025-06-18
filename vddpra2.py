@@ -1,28 +1,30 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ---------- CARGAR DATOS ----------
+# ---------- CONFIGURACIÓN ----------
+st.set_page_config(layout="wide")
+st.title("🌍 Visualización climática histórica por capitales")
+
+# ---------- CARGAR DATOS DESDE GOOGLE DRIVE ----------
 @st.cache_data
 def cargar_datos():
-    url = "https://drive.google.com/uc?id=1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"  # tu ID de archivo
+    # ID del archivo compartido
+    file_id = "1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"
+    url = f"https://drive.google.com/uc?id={file_id}"
+    
     try:
         df_final = pd.read_csv(url)
+        if "month" not in df_final.columns:
+            raise ValueError("La columna 'month' no se encuentra en el archivo.")
         df_final["month"] = pd.to_datetime(df_final["month"], errors="coerce")
         return df_final
     except Exception as e:
         st.error(f"❌ Error al cargar los datos: {e}")
-        return pd.DataFrame()
+        return None
 
 df_final = cargar_datos()
-
-# ---------- COMPROBACIONES ----------
-if df_final.empty:
-    st.stop()
-
-if "month" not in df_final.columns:
-    st.error("❌ La columna 'month' no se encuentra en el archivo cargado.")
+if df_final is None:
     st.stop()
 
 # ---------- VARIABLES DISPONIBLES ----------
@@ -35,7 +37,7 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-st.title("🌍 Visualización climática histórica por capitales")
+# ---------- SELECCIÓN DE VARIABLE ----------
 variable = st.selectbox("📊 Variable climática:", sorted(variables_disponibles))
 rel_variable = f"rel_{variable}_historico"
 
@@ -53,7 +55,7 @@ df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
 df_vis = df_final.dropna(subset=[rel_variable, variable])
 
 if df_vis.empty:
-    st.warning("⚠️ No hay datos con valores históricos suficientes para esta variable.")
+    st.warning("⚠️ No hay datos disponibles para esta variable con valores históricos suficientes.")
     st.stop()
 
 # ---------- MAPA ANIMADO ----------
