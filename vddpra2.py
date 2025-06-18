@@ -30,8 +30,8 @@ variables_disponibles = [
     'apparent_temperature_max', 'apparent_temperature_min', 'apparent_temperature_mean',
     'daylight_duration', 'sunshine_duration',
     'precipitation_sum', 'rain_sum', 'snowfall_sum', 'precipitation_hours',
-    'wind_speed_10m_max', 'wind_gusts_10m_max', 'wind_direction_10m_dominant',
-    'shortwave_radiation_sum', 'et0_fao_evapotranspiration'
+    'wind_speed_10m_max', 'wind_gusts_10m_max', 'shortwave_radiation_sum', 
+    'et0_fao_evapotranspiration'
 ]
 
 # ---------- SELECCIÓN DE VARIABLE ----------
@@ -116,20 +116,19 @@ st.plotly_chart(fig, use_container_width=True)
 descripciones = {
     'temperature_2m_max': 'Temperatura máxima diaria del aire a 2 metros sobre el suelo (°C).',
     'temperature_2m_min': 'Temperatura mínima diaria del aire a 2 metros sobre el suelo (°C).',
-    'temperature_2m_mean': 'Temperatura media diaria a 2 metros. Derivada de los valores horarios.',
-    'apparent_temperature_max': 'Temperatura aparente máxima diaria (sensación térmica) combinando viento, humedad y radiación solar.',
-    'apparent_temperature_min': 'Temperatura aparente mínima diaria.',
-    'apparent_temperature_mean': 'Temperatura aparente media diaria. Derivada, no variable oficial.',
-    'daylight_duration': 'Duración de la luz natural (segundos) entre el amanecer y el atardecer.',
-    'sunshine_duration': 'Duración del sol directo (segundos) con irradiancia superior a 120 W/m².',
-    'precipitation_sum': 'Suma total de precipitación diaria (lluvia + nieve) en milímetros.',
-    'rain_sum': 'Cantidad total de lluvia diaria (excluye nieve) en milímetros.',
-    'snowfall_sum': 'Cantidad total de nieve diaria en centímetros.',
-    'precipitation_hours': 'Número de horas con precipitación en un día.',
-    'wind_speed_10m_max': 'Velocidad máxima del viento a 10 metros (km/h o m/s).',
-    'wind_gusts_10m_max': 'Ráfaga máxima de viento a 10 metros (km/h o m/s).',
-    'wind_direction_10m_dominant': 'Dirección dominante del viento en grados (0° = norte).',
-    'shortwave_radiation_sum': 'Suma diaria de radiación solar de onda corta en MJ/m².',
+    'temperature_2m_mean': 'Temperatura media diaria a 2 metros sobre el suelo (°C).',
+    'apparent_temperature_max': 'Sensación térmica máxima diaria combinando viento, humedad y radiación solar.',
+    'apparent_temperature_min': 'Sensación térmica mínima diaria combinando viento, humedad y radiación solar.',
+    'apparent_temperature_mean': 'Sensación térmica media diaria combinando viento, humedad y radiación solar.',
+    'daylight_duration': 'Duración de la luz natural diaria (segundos) entre el amanecer y el atardecer.',
+    'sunshine_duration': 'Duración del sol directo diario (segundos) con irradiancia superior a 120 W/m².',
+    'precipitation_sum': 'Suma total de precipitación mensual (lluvia + nieve) en milímetros.',
+    'rain_sum': 'Cantidad total de lluvia mensual (excluyendo nieve) en milímetros.',
+    'snowfall_sum': 'Cantidad total de nieve mensual en centímetros.',
+    'precipitation_hours': 'Número de horas diarias con precipitación.',
+    'wind_speed_10m_max': 'Velocidad máxima del viento a 10 metros diaria (km/h).',
+    'wind_gusts_10m_max': 'Ráfaga máxima de viento a 10 metros diaria (km/h).',
+    'shortwave_radiation_sum': 'Suma mensual de radiación solar de onda corta en MJ/m².',
     'et0_fao_evapotranspiration': 'Evapotranspiración de referencia diaria (mm) calculada según FAO Penman-Monteith.'
 }
 
