@@ -144,8 +144,7 @@ descripciones = {
 }
 
 
-with st.expander('Descripción de la variable seleccionada'):
+with st.expander('ℹ️ Descripción de la variable seleccionada', expanded=False, key='expander_descripcion'):
     descripcion = descripciones.get(variable, 'Descripción no disponible.')
     st.markdown(f'**{variable}**: {descripcion}')
-
 
