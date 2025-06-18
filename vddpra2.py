@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
@@ -7,28 +8,14 @@ import plotly.express as px
 @st.cache_data
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1Yx-oCybcKIe4p2z8kM7nLnEPpUh5-V2x"
-    df = pd.read_csv(url)
-
-    # Validación de columna 'month'
-    if 'month' not in df.columns:
-        raise ValueError("❌ La columna 'month' no se encuentra en el archivo CSV.")
-    
-    # Asegurar que sea datetime
-    df["month"] = pd.to_datetime(df["month"], errors="coerce")
-    
-    # Validación de errores de conversión
-    if df["month"].isnull().all():
-        raise ValueError("❌ Todos los valores de 'month' fallaron al convertirse en datetime.")
-    
+    df = pd.read_csv(url, parse_dates=["month"])
     return df
 
-try:
-    df_final = cargar_datos()
-except Exception as e:
-    st.error(f"❌ Error al cargar los datos: {e}")
-    st.stop()
+df = cargar_datos()
 
-# ---------- VARIABLES DISPONIBLES ----------
+# ---------- TÍTULO Y VARIABLE ----------
+st.title("🌍 Visualización climática por capitales")
+
 variables_disponibles = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
     "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean",
@@ -38,37 +25,18 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-st.title("🌍 Visualización climática histórica por capitales")
-variable = st.selectbox("📊 Variable climática:", sorted(variables_disponibles))
-rel_variable = f"rel_{variable}_historico"
+variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 
-# ---------- VALIDACIONES ----------
-if variable not in df_final.columns:
-    st.error(f"❌ La columna '{variable}' no se encuentra en el dataset.")
-    st.stop()
 
-if rel_variable not in df_final.columns:
-    st.error(f"❌ La columna '{rel_variable}' no se encuentra en el dataset.")
-    st.stop()
 
-# ---------- FORMATO DE FECHAS Y FILTRO ----------
-df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
-df_vis = df_final.dropna(subset=[rel_variable, variable])
-
-if df_vis.empty:
-    st.warning("⚠️ No hay datos con valores históricos suficientes para esta variable.")
-    st.stop()
-
-# ---------- MAPA ANIMADO ----------
 fig = px.scatter_mapbox(
-    df_vis,
+    df,
     lat="latitude",
     lon="longitude",
-    color=rel_variable,
-    size=df_vis[variable].abs(),
-    animation_frame="month_str",
+    size=df[variable].abs(),
+    animation_frame=df["month"].dt.strftime("%Y-%m"),
     hover_name="city_name",
-    hover_data=["country_name", variable, rel_variable],
+    hover_data=["country_name", variable],
     color_continuous_scale="RdBu_r",
     size_max=15,
     zoom=1
@@ -76,10 +44,9 @@ fig = px.scatter_mapbox(
 
 fig.update_layout(
     mapbox_style="carto-positron",
-    title=f"Evolución histórica mensual de {variable}",
+    title=f"Evolución temporal de {variable}",
     height=750,
     width=1100
 )
 
 st.plotly_chart(fig, use_container_width=False)
-
