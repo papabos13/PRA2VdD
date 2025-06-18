@@ -34,7 +34,6 @@ variables_disponibles = [
     'shortwave_radiation_sum', 'et0_fao_evapotranspiration'
 ]
 
-
 # ---------- SELECCIÓN DE VARIABLE ----------
 # Mostramos un menú desplegable para que el usuario elija la variable a visualizar
 variable = st.selectbox('Selecciona la variable climática', variables_disponibles)
@@ -57,15 +56,15 @@ color_var = f'rel_{variable}'
 
 # ---------- FORMATEO DE VARIABLES PARA HOVER ----------
 
-# Formato de fecha europeo
+# Creamos un formato de fecha europeo
 df['fecha_europea'] = df['month'].dt.strftime('%m-%Y')
 
-# Variable legible para mostrar en el hover
+# Creamos una variable legible para mostrar en el hover
 df['nombre_variable'] = variable.replace('_', ' ').capitalize()
 df['valor_variable'] = df[variable]
 df['valor_rel'] = df[color_var]
 
-# Columnas que se mostrarán en el hover
+# Creamos un diccionario con las columnas que se mostrarán en el hover
 hover_data = {
     'fecha_europea': True,
     'country_name': True,
@@ -97,14 +96,14 @@ fig = px.scatter_mapbox(
     hover_data=hover_data
 )
 
-# Hover personalizado usando los campos ya insertados como columnas
+# Creamos un hover personalizado usando los campos ya insertados como columnas
 fig.update_traces(
     hovertemplate=
         '<b>%{hovertext}</b><br>' +
-        '📅 Fecha: %{customdata[0]}<br>' +
-        '🌍 País: %{customdata[1]}<br>' +
-        '📈 %{customdata[2]}: %{customdata[3]:.2f}<br>' +
-        '📊 Relativo: %{customdata[4]:.2f}<extra></extra>'
+        'Fecha: %{customdata[0]}<br>' +
+        'País: %{customdata[1]}<br>' +
+        '%{customdata[2]}: %{customdata[3]:.2f}<br>' +
+        'Relativo: %{customdata[4]:.2f}<extra></extra>'
 )
 
 # Ajustamos los márgenes del gráfico y la altura
