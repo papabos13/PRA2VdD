@@ -65,4 +65,11 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=False)
 
-
+# ---------- MOSTRAR ESTADÍSTICAS PARA DEBUGGING ----------
+st.write("### Estadísticas de rel_value_city:")
+st.write(f"Min: {df['rel_value_city'].min():.3f}")
+st.write(f"Max: {df['rel_value_city'].max():.3f}")
+st.write(f"Media: {df['rel_value_city'].mean():.3f}")
+st.write(f"Desviación estándar: {df['rel_value_city'].std():.3f}")
+st.write(f"Valores únicos: {df['rel_value_city'].nunique()}")
+st.write(f"Valores no-cero: {(df['rel_value_city'] != 0).sum()}")
