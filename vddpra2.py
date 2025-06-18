@@ -101,7 +101,7 @@ descripciones = {
     'et0_fao_evapotranspiration': 'Evapotranspiración potencial FAO (mm).'
 }
 
-with st.expander('ℹ️  Descripción de la variable seleccionada'):
+with st.expander('Descripción de la variable seleccionada'):
     descripcion = descripciones.get(variable, 'Descripción no disponible.')
     st.markdown(f'**{variable}**: {descripcion}')
 
