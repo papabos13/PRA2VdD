@@ -7,7 +7,7 @@ import plotly.express as px
 # ---------- CARGAR DATOS ----------
 @st.cache_data
 def cargar_datos():
-    url = "https://drive.google.com/uc?id=1PumGCVeb9pBb1VdC3Atm9GoLrxybVfh8"  # tu ID de Drive
+    url = "https://drive.google.com/uc?id=1YtEcEhdS9bddZddkCoZO_NkUuavwmLJz"  # tu ID de Drive
     df = pd.read_csv(url, parse_dates=["month"])
     df["month"] = pd.to_datetime(df["month"], format="%Y-%m-%d")  # aseguro que es datetime
     df["month_slider"] = df["month"].dt.date  # necesario para slider
