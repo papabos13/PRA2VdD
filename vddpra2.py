@@ -27,6 +27,13 @@ variable = st.selectbox("Selecciona la variable de temperatura base", temp_vars)
 col_size = f"rel_{variable}_global"
 col_color = f"rel_{variable}_city"
 
+min_val = df_filtrado[col_size].min()
+max_val = df_filtrado[col_size].max()
+
+df_filtrado["size_scaled"] = (
+    (df_filtrado[col_size] - min_val) / (max_val - min_val) * 45 + 5
+)
+
 # Selector de fecha (año-mes)
 fechas_disponibles = df["month"].dt.to_period("M").drop_duplicates().astype(str)
 fecha_str = st.selectbox("Selecciona una fecha (AAAA-MM)", fechas_disponibles)
