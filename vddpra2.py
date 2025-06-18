@@ -12,33 +12,28 @@ def cargar_datos():
 
 df_final = cargar_datos()
 
-# ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Visualización climática histórica por capitales")
-
+# ---------- VARIABLES DISPONIBLES CON HISTÓRICO ----------
+todas_las_columnas = df_final.columns
 variables_disponibles = [
-    "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
-    "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean",
-    "sunrise_avg_min", "sunset_avg_min", "daylight_duration", "sunshine_duration",
-    "precipitation_sum", "rain_sum", "snowfall_sum", "precipitation_hours",
-    "wind_speed_10m_max", "wind_gusts_10m_max", "wind_direction_10m_dominant",
-    "shortwave_radiation_sum", "et0_fao_evapotranspiration"
+    col.replace("rel_", "").replace("_historico", "")
+    for col in todas_las_columnas
+    if col.startswith("rel_") and col.endswith("_historico")
 ]
 
-# Selector de variable
-variable = st.selectbox("📊 Variable climática:", variables_disponibles)
+# ---------- INTERFAZ ----------
+st.title("🌍 Visualización climática histórica por capitales")
+variable = st.selectbox("📊 Variable climática:", sorted(variables_disponibles))
 rel_variable = f"rel_{variable}_historico"
 
-# ---------- FILTRADO Y MAPA ----------
-df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
-
+# Verificación de columna
 if rel_variable not in df_final.columns:
-    st.error(f"La columna '{rel_variable}' no existe en el archivo cargado.")
+    st.error(f"La columna '{rel_variable}' no está en el archivo.")
     st.stop()
-else:
-    # Filtrar solo registros con histórico válido
-    df_vis = df_final.dropna(subset=[rel_variable])
 
-# Crear figura
+# ---------- MAPA ----------
+df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
+df_vis = df_final.dropna(subset=[rel_variable])
+
 fig = px.scatter_mapbox(
     df_vis,
     lat="latitude",
@@ -61,4 +56,3 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=False)
-
