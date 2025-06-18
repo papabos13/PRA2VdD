@@ -7,8 +7,14 @@ import plotly.express as px
 @st.cache_data
 def cargar_datos():  
     url = "https://drive.google.com/uc?id=1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"
-    df_final = pd.read_csv(url, parse_dates=["month"])
-    return df_final
+    df = pd.read_csv(url)
+    
+    if "month" not in df.columns:
+        st.error("❌ La columna 'month' no se encuentra en el archivo cargado.")
+        st.stop()
+
+    df["month"] = pd.to_datetime(df["month"])  # ahora sí
+    return df
 
 df_final = cargar_datos()
 
