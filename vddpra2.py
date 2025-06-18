@@ -38,6 +38,9 @@ df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transfor
     lambda x: (x - x.mean()) / x.std() if len(x) > 1 and x.std() > 0 else None
 )
 
+if df["rel_value_city"].nunique(dropna=True) < 2:
+    st.error("⚠️ rel_value_city no tiene suficientes valores distintos para mostrar colores.")
+    st.stop()
 
 
 # ---------- CREAR VISUALIZACIÓN ----------
