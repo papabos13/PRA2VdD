@@ -1,28 +1,31 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ---------- CONFIGURACIÓN ----------
-st.set_page_config(layout="wide")
-st.title("🌍 Visualización climática histórica por capitales")
-# ---------- CARGAR DATOS DESDE GOOGLE DRIVE ----------
+# ---------- CARGAR DATOS ----------
 @st.cache_data
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"
-    try:
-        df = pd.read_csv(url)
-        if 'month' not in df.columns:
-            st.error("❌ Error: la columna 'month' no se encuentra en el archivo CSV.")
-            st.stop()
-        # Convertir manualmente a datetime
-        df["month"] = pd.to_datetime(df["month"], errors='coerce')
-        return df
-    except Exception as e:
-        st.error(f"❌ Error al cargar los datos: {e}")
-        st.stop()
+    df = pd.read_csv(url)
 
-df_final = cargar_datos()
-if df_final is None:
+    # Validación de columna 'month'
+    if 'month' not in df.columns:
+        raise ValueError("❌ La columna 'month' no se encuentra en el archivo CSV.")
+    
+    # Asegurar que sea datetime
+    df["month"] = pd.to_datetime(df["month"], errors="coerce")
+    
+    # Validación de errores de conversión
+    if df["month"].isnull().all():
+        raise ValueError("❌ Todos los valores de 'month' fallaron al convertirse en datetime.")
+    
+    return df
+
+try:
+    df_final = cargar_datos()
+except Exception as e:
+    st.error(f"❌ Error al cargar los datos: {e}")
     st.stop()
 
 # ---------- VARIABLES DISPONIBLES ----------
@@ -35,7 +38,7 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-# ---------- SELECCIÓN DE VARIABLE ----------
+st.title("🌍 Visualización climática histórica por capitales")
 variable = st.selectbox("📊 Variable climática:", sorted(variables_disponibles))
 rel_variable = f"rel_{variable}_historico"
 
@@ -48,12 +51,12 @@ if rel_variable not in df_final.columns:
     st.error(f"❌ La columna '{rel_variable}' no se encuentra en el dataset.")
     st.stop()
 
-# ---------- PREPARAR DATOS PARA VISUALIZACIÓN ----------
+# ---------- FORMATO DE FECHAS Y FILTRO ----------
 df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
 df_vis = df_final.dropna(subset=[rel_variable, variable])
 
 if df_vis.empty:
-    st.warning("⚠️ No hay datos disponibles para esta variable con valores históricos suficientes.")
+    st.warning("⚠️ No hay datos con valores históricos suficientes para esta variable.")
     st.stop()
 
 # ---------- MAPA ANIMADO ----------
@@ -79,3 +82,4 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=False)
+
