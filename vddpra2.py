@@ -111,6 +111,30 @@ fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
 # Mostramos el gráfico dentro de la aplicación Streamlit
 st.plotly_chart(fig, use_container_width=True)
 
+# ---------- EXPLICACIÓN DE LA VISUALIZACIÓN ----------
+with st.expander('🧭 ¿Cómo interpretar esta visualización?'):
+    st.markdown('''
+Esta visualización interactiva muestra la evolución mensual de variables climáticas desde 1950 hasta la actualidad en distintas capitales del mundo.
+
+**¿Cómo funciona?**
+
+- En la parte superior, puedes seleccionar la variable climática que deseas visualizar (por ejemplo: temperatura, precipitación, radiación...).
+- La animación te permite avanzar cronológicamente **mes a mes** con el botón ▶️ o seleccionar manualmente una fecha con la barra deslizante.
+- Cada círculo representa una capital:
+    - 📏 **Tamaño del círculo**: representa el valor de la variable seleccionada en esa ciudad y mes, **comparado con otras ciudades en ese mismo mes**.
+    - 🎨 **Color**: indica si ese valor es **más alto o más bajo que su propio histórico mensual**. Es decir:
+        - 🔴 Rojo: valor más alto de lo habitual para esa ciudad en ese mes.
+        - 🔵 Azul: valor más bajo de lo habitual.
+        - ⚪ Neutro: valor cercano a su media histórica mensual.
+- Al pasar el ratón sobre un círculo, verás:
+    - La ciudad y país
+    - La fecha
+    - El valor concreto de la variable
+    - Su desviación respecto a su histórico (relativo)
+
+Esta representación permite **comparar cómo varía el clima entre capitales y en el tiempo**, destacando anomalías o patrones estacionales globales.
+    ''')
+
 # ---------- EXPLICACIÓN DE VARIABLES ----------
 # Diccionario con descripciones breves 
 descripciones = {
