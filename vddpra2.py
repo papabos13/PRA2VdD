@@ -12,12 +12,14 @@ def cargar_datos():
 
 df_final = cargar_datos()
 
-# ---------- VARIABLES DISPONIBLES CON HISTÓRICO ----------
-todas_las_columnas = df_final.columns
+# ---------- VARIABLES DISPONIBLES ----------
 variables_disponibles = [
-    col.replace("rel_", "").replace("_historico", "")
-    for col in todas_las_columnas
-    if col.startswith("rel_") and col.endswith("_historico")
+    "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
+    "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean",
+    "sunrise_avg_min", "sunset_avg_min", "daylight_duration", "sunshine_duration",
+    "precipitation_sum", "rain_sum", "snowfall_sum", "precipitation_hours",
+    "wind_speed_10m_max", "wind_gusts_10m_max", "wind_direction_10m_dominant",
+    "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
 # ---------- INTERFAZ ----------
@@ -25,15 +27,16 @@ st.title("🌍 Visualización climática histórica por capitales")
 variable = st.selectbox("📊 Variable climática:", sorted(variables_disponibles))
 rel_variable = f"rel_{variable}_historico"
 
-# Verificación de columna
-if rel_variable not in df_final.columns:
-    st.error(f"La columna '{rel_variable}' no está en el archivo.")
+# ---------- VALIDACIÓN ----------
+if variable not in df_final.columns or rel_variable not in df_final.columns:
+    st.error(f"No se encuentran las columnas necesarias: {variable} y/o {rel_variable}.")
     st.stop()
 
-# ---------- MAPA ----------
+# ---------- FORMATEAR FECHAS Y FILTRAR DATOS ----------
 df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
-df_vis = df_final.dropna(subset=[rel_variable])
+df_vis = df_final.dropna(subset=[rel_variable, variable])
 
+# ---------- CREAR MAPA ANIMADO ----------
 fig = px.scatter_mapbox(
     df_vis,
     lat="latitude",
@@ -42,7 +45,7 @@ fig = px.scatter_mapbox(
     size=df_vis[variable].abs(),
     animation_frame="month_str",
     hover_name="city_name",
-    hover_data=["country_name", variable],
+    hover_data=["country_name", variable, rel_variable],
     color_continuous_scale="RdBu_r",
     size_max=15,
     zoom=1
