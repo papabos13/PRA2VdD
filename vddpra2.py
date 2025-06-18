@@ -9,8 +9,8 @@ import plotly.express as px
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1PumGCVeb9pBb1VdC3Atm9GoLrxybVfh8"  # tu ID de Drive
     df = pd.read_csv(url, parse_dates=["month"])
-    # Convertir a primer día del mes para un formato uniforme
-    df["month"] = pd.to_datetime(df["month"]).dt.to_period("M").dt.to_timestamp()
+    df["month"] = pd.to_datetime(df["month"], format="%Y-%m-%d")  # aseguro que es datetime
+    df["month_slider"] = df["month"].dt.date  # necesario para slider
     return df
 
 df = cargar_datos()
@@ -21,23 +21,22 @@ st.markdown("Selecciona una variable para visualizar su evolución en el tiempo 
 
 variables_absolutas = [
     col for col in df.columns
-    if col not in ['city_name', 'month', 'latitude', 'longitude', 'country_name', 'sunrise_avg_hhmm', 'sunset_avg_hhmm', 'year', 'month_number', 'month_num']
+    if col not in ['city_name', 'month', 'month_slider', 'latitude', 'longitude',
+                   'country_name', 'sunrise_avg_hhmm', 'sunset_avg_hhmm', 'year',
+                   'month_number', 'month_num']
     and not col.startswith("rel_")
 ]
 
-# Selección de variable
 var_abs = st.selectbox("Selecciona una variable absoluta", variables_absolutas)
-
-# Variable relativa asociada
 var_rel = f"rel_{var_abs}_historico"
 
-# Fecha con valores seguros
-min_fecha = df["month"].min()
-max_fecha = df["month"].max()
+# Slider usando valores tipo date
+min_fecha = df["month_slider"].min()
+max_fecha = df["month_slider"].max()
 fecha = st.slider("Selecciona una fecha", min_value=min_fecha, max_value=max_fecha, value=min_fecha, format="YYYY-MM")
 
-# Filtrar DataFrame por la fecha
-df_filtrado = df[df["month"] == fecha]
+# Filtro usando columna auxiliar convertida
+df_filtrado = df[df["month_slider"] == fecha]
 
 # ---------- VISUALIZACIÓN ----------
 st.subheader(f"{var_abs} en {fecha.strftime('%B %Y')}")
