@@ -6,13 +6,13 @@ import plotly.express as px
 st.set_page_config(page_title="Clima en capitales", layout="wide")
 st.title("🌍 Animación del clima mensual en capitales del mundo")
 
-# ---------- CARGA DE DATOS DESDE GOOGLE DRIVE ----------
+# ---------- CARGA DE DATOS ----------
 @st.cache_data
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1MXhkIsh9Eeq1OEhXuWp8rdiS-TZgR_8n"
     df = pd.read_csv(url, parse_dates=["month"])
     df["fecha_str"] = df["month"].dt.strftime("%Y-%m")
-    df = df.sort_values(by=["month"])  # ORDENAR correctamente por tiempo
+    df = df.sort_values(by=["month"])
     return df
 
 df = cargar_datos()
@@ -30,7 +30,7 @@ variables_disponibles = [
 # ---------- SELECCIÓN DE VARIABLE ----------
 variable = st.selectbox("📊 Selecciona la variable climática", variables_disponibles)
 
-# ---------- LÓGICA DE SIZE Y COLOR ----------
+# ---------- SIZE Y COLOR ----------
 variables_shifted = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
     "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean"
@@ -43,7 +43,7 @@ else:
 
 color_var = f"rel_{variable}"
 
-# ---------- MAPA CON ANIMACIÓN (MAPBOX) ----------
+# ---------- ANIMACIÓN GLOBAL ----------
 try:
     fig = px.scatter_mapbox(
         df,
@@ -56,13 +56,46 @@ try:
         size_max=25,
         zoom=1,
         mapbox_style="open-street-map",
-        color_continuous_scale="RdBu",
+        color_continuous_scale="RdBu_r",  # ← invertimos los colores
         title=f"Evolución de {variable} mensual (1950–2024)"
     )
 
-    fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
+    fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0}, height=700)
     st.plotly_chart(fig, use_container_width=True)
 
 except Exception as e:
-    st.error(f"❌ Error al generar el mapa: {e}")
+    st.error(f"❌ Error al generar el mapa animado: {e}")
+
+# ---------- SELECCIÓN MANUAL ----------
+st.subheader("🔎 Visualización puntual por fecha")
+fechas_disponibles = df["fecha_str"].unique().tolist()
+fecha_seleccionada = st.selectbox("📅 Elige una fecha:", fechas_disponibles)
+
+df_filtrado = df[df["fecha_str"] == fecha_seleccionada]
+
+try:
+    fig_static = px.scatter_mapbox(
+        df_filtrado,
+        lat="latitude",
+        lon="longitude",
+        hover_name="city_name",
+        size=size_var,
+        color=color_var,
+        size_max=25,
+        zoom=1,
+        mapbox_style="open-street-map",
+        color_continuous_scale="RdBu_r",
+        title=f"{variable} en {fecha_seleccionada}"
+    )
+
+    fig.update_layout(
+        margin={"r":0, "t":50, "l":0, "b":0},
+        height=700,
+        autosize=True
+    )
+
+    st.plotly_chart(fig_static, use_container_width=True)
+
+except Exception as e:
+    st.error(f"❌ Error al generar el mapa para {fecha_seleccionada}: {e}")
 
