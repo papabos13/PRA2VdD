@@ -16,7 +16,7 @@ st.title('Evolución de variables climáticas en las capitales del mundo desde 1
 def cargar_datos():
     url = 'https://drive.google.com/uc?id=1MXhkIsh9Eeq1OEhXuWp8rdiS-TZgR_8n'
     df = pd.read_csv(url, parse_dates=['month'])  # Cargamos el CSV y convertimos 'month' a formato fecha
-    df['fecha_str'] = 'Fecha: ' + df['month'].dt.strftime('%m-%Y')  # Creamos una columna de texto con formato Fecha: 'MM-YYYY' para la animación
+    df['Fecha'] = df['month'].dt.strftime('%m-%Y')  # Creamos una columna de texto con formato 'MM-YYYY' para la animación
     df = df.sort_values(by=['month'])  # Ordenamos los datos por fecha para que la animación sea cronológica
     return df
 
