@@ -132,7 +132,6 @@ descripciones = {
     'et0_fao_evapotranspiration': 'Evapotranspiración de referencia diaria (mm) calculada según FAO Penman-Monteith.'
 }
 
-
 with st.expander('Descripción de la variable seleccionada'):
     descripcion = descripciones.get(variable, 'Descripción no disponible.')
     st.markdown(f'**{variable}**: {descripcion}')
