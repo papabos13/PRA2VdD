@@ -5,23 +5,21 @@ import plotly.express as px
 # ---------- CONFIGURACIÓN ----------
 st.set_page_config(layout="wide")
 st.title("🌍 Visualización climática histórica por capitales")
-
 # ---------- CARGAR DATOS DESDE GOOGLE DRIVE ----------
 @st.cache_data
 def cargar_datos():
-    # ID del archivo compartido
-    file_id = "1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"
-    url = f"https://drive.google.com/uc?id={file_id}"
-    
+    url = "https://drive.google.com/uc?id=1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"
     try:
-        df_final = pd.read_csv(url)
-        if "month" not in df_final.columns:
-            raise ValueError("La columna 'month' no se encuentra en el archivo.")
-        df_final["month"] = pd.to_datetime(df_final["month"], errors="coerce")
-        return df_final
+        df = pd.read_csv(url)
+        if 'month' not in df.columns:
+            st.error("❌ Error: la columna 'month' no se encuentra en el archivo CSV.")
+            st.stop()
+        # Convertir manualmente a datetime
+        df["month"] = pd.to_datetime(df["month"], errors='coerce')
+        return df
     except Exception as e:
         st.error(f"❌ Error al cargar los datos: {e}")
-        return None
+        st.stop()
 
 df_final = cargar_datos()
 if df_final is None:
