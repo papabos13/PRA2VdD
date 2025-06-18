@@ -60,7 +60,7 @@ try:
         title=f"Evolución de {variable} mensual (1950–2024)"
     )
 
-    fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0}, height=700)
+    fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0}, height=1000)
     st.plotly_chart(fig, use_container_width=True)
 
 except Exception as e:
