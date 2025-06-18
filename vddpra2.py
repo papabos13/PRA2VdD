@@ -58,3 +58,7 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=False)
+
+st.write("Ejemplo de valores de rel_value_city:")
+st.dataframe(df[["city_name", "month", variable, "rel_value_city"]].dropna().head(10))
+
