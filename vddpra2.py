@@ -46,7 +46,6 @@ fig = px.scatter_mapbox(
     lat="latitude",
     lon="longitude",
     size="rel_value",
-    color="rel_value_city",  # Ahora debería mostrar variación de colores
     animation_frame=df["month"].dt.strftime("%Y-%m"),
     hover_name="city_name",
     hover_data=["country_name", variable, "rel_value", "rel_value_city"],
