@@ -28,11 +28,12 @@ df = cargar_datos()
 variables_disponibles = [
     'temperature_2m_max', 'temperature_2m_min', 'temperature_2m_mean',
     'apparent_temperature_max', 'apparent_temperature_min', 'apparent_temperature_mean',
-    'sunrise_avg_min', 'sunset_avg_min', 'daylight_duration', 'sunshine_duration',
+    'daylight_duration', 'sunshine_duration',
     'precipitation_sum', 'rain_sum', 'snowfall_sum', 'precipitation_hours',
     'wind_speed_10m_max', 'wind_gusts_10m_max', 'wind_direction_10m_dominant',
     'shortwave_radiation_sum', 'et0_fao_evapotranspiration'
 ]
+
 
 # ---------- SELECCIÓN DE VARIABLE ----------
 # Mostramos un menú desplegable para que el usuario elija la variable a visualizar
@@ -78,28 +79,27 @@ fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
 st.plotly_chart(fig, use_container_width=True)
 
 # ---------- EXPLICACIÓN DE VARIABLES ----------
-# Diccionario con descripciones breves (modifícalo o amplíalo a tu gusto)
+# Diccionario con descripciones breves 
 descripciones = {
-    'temperature_2m_max': 'Temperatura máxima a 2 m sobre el suelo (°C).',
-    'temperature_2m_min': 'Temperatura mínima a 2 m sobre el suelo (°C).',
-    'temperature_2m_mean': 'Temperatura media a 2 m sobre el suelo (°C).',
-    'apparent_temperature_max': 'Temperatura aparente (sensación térmica) máxima (°C).',
-    'apparent_temperature_min': 'Temperatura aparente mínima (°C).',
-    'apparent_temperature_mean': 'Temperatura aparente media (°C).',
-    'sunrise_avg_min': 'Hora media (en minutos) del amanecer en el mes.',
-    'sunset_avg_min': 'Hora media (en minutos) del atardecer en el mes.',
-    'daylight_duration': 'Duración total de luz diurna (segundos).',
-    'sunshine_duration': 'Horas de sol directo registradas (segundos).',
-    'precipitation_sum': 'Precipitación total mensual (mm).',
-    'rain_sum': 'Lluvia total mensual (mm).',
-    'snowfall_sum': 'Nieve total mensual (mm).',
-    'precipitation_hours': 'Horas con precipitación en el mes.',
-    'wind_speed_10m_max': 'Velocidad máxima del viento a 10 m (m/s).',
-    'wind_gusts_10m_max': 'Ráfagas máximas de viento a 10 m (m/s).',
-    'wind_direction_10m_dominant': 'Dirección dominante del viento a 10 m (grados).',
-    'shortwave_radiation_sum': 'Radiación solar de onda corta acumulada (Wh/m²).',
-    'et0_fao_evapotranspiration': 'Evapotranspiración potencial FAO (mm).'
+    'temperature_2m_max': 'Temperatura máxima diaria del aire a 2 metros sobre el suelo (°C).',
+    'temperature_2m_min': 'Temperatura mínima diaria del aire a 2 metros sobre el suelo (°C).',
+    'temperature_2m_mean': 'Temperatura media diaria a 2 metros. Derivada de los valores horarios.',
+    'apparent_temperature_max': 'Temperatura aparente máxima diaria (sensación térmica) combinando viento, humedad y radiación solar.',
+    'apparent_temperature_min': 'Temperatura aparente mínima diaria.',
+    'apparent_temperature_mean': 'Temperatura aparente media diaria. Derivada, no variable oficial.',
+    'daylight_duration': 'Duración de la luz natural (segundos) entre el amanecer y el atardecer.',
+    'sunshine_duration': 'Duración del sol directo (segundos) con irradiancia superior a 120 W/m².',
+    'precipitation_sum': 'Suma total de precipitación diaria (lluvia + nieve) en milímetros.',
+    'rain_sum': 'Cantidad total de lluvia diaria (excluye nieve) en milímetros.',
+    'snowfall_sum': 'Cantidad total de nieve diaria en centímetros.',
+    'precipitation_hours': 'Número de horas con precipitación en un día.',
+    'wind_speed_10m_max': 'Velocidad máxima del viento a 10 metros (km/h o m/s).',
+    'wind_gusts_10m_max': 'Ráfaga máxima de viento a 10 metros (km/h o m/s).',
+    'wind_direction_10m_dominant': 'Dirección dominante del viento en grados (0° = norte).',
+    'shortwave_radiation_sum': 'Suma diaria de radiación solar de onda corta en MJ/m².',
+    'et0_fao_evapotranspiration': 'Evapotranspiración de referencia diaria (mm) calculada según FAO Penman-Monteith.'
 }
+
 
 with st.expander('Descripción de la variable seleccionada'):
     descripcion = descripciones.get(variable, 'Descripción no disponible.')
