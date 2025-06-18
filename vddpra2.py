@@ -13,24 +13,26 @@ def cargar_datos():
 df = cargar_datos()
 
 # ---------- INTERFAZ ----------
-st.title("🌍 Mapa climático por capitales")
+st.title("🌍 Visualización climática por capitales")
 
-# Mostrar columnas numéricas disponibles para seleccionar
 columnas_numericas = df.select_dtypes(include=["float64", "int64"]).columns.tolist()
+variable = st.selectbox("📌 Variable a visualizar (tamaño del punto)", columnas_numericas)
 
-# Selección de variable
-variable = st.selectbox("Selecciona la variable a visualizar:", columnas_numericas)
+# Asegurarse de que 'month' es tipo datetime
+df["month"] = pd.to_datetime(df["month"])
 
-# Selección de fecha (opcional si hay columna 'month')
-if "month" in df.columns:
-    fechas_disponibles = sorted(df["month"].unique())
-    fecha_seleccionada = st.selectbox("Selecciona la fecha:", fechas_disponibles)
-    df_filtrado = df[df["month"] == fecha_seleccionada]
+# Obtener lista de fechas únicas como objetos datetime (no strings)
+fechas_disponibles = sorted(df["month"].dt.to_period("M").drop_duplicates().astype(str))
+fecha_str = st.selectbox("🗓️ Selecciona una fecha", fechas_disponibles)
+
+# Convertimos la fecha seleccionada a periodo mensual y comparamos
+df_filtrado = df[df["month"].dt.to_period("M").astype(str) == fecha_str]
+
+# Mostrar advertencia si no hay datos
+if df_filtrado.empty:
+    st.warning(f"⚠️ No hay datos disponibles para la fecha seleccionada: {fecha_str}")
 else:
-    df_filtrado = df.copy()
-
-# ---------- MAPA ----------
-if all(col in df_filtrado.columns for col in ["latitude", "longitude"]):
+    st.success(f"✅ Mostrando datos para {variable} en {fecha_str}")
     fig = px.scatter_geo(
         df_filtrado,
         lat="latitude",
@@ -39,9 +41,6 @@ if all(col in df_filtrado.columns for col in ["latitude", "longitude"]):
         size=variable,
         hover_name="capital",
         projection="natural earth",
-        title=f"Distribución geográfica de {variable}",
+        title=f"{variable} en {fecha_str}",
     )
     st.plotly_chart(fig)
-else:
-    st.error("❌ El dataset no tiene columnas de latitud o longitud.")
-
