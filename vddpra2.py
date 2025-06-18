@@ -5,8 +5,8 @@ import plotly.express as px
 
 # ---------- CARGAR DATOS ----------
 @st.cache_data
-def cargar_datos(): 
-    url = "https://drive.google.com/uc?id=1XTtIZYexn4m584TUBLaW0ketFT83iDQn"
+def cargar_datos():  
+    url = "https://drive.google.com/uc?id=1XsGsc3nVLuOldbId5z3gdj4hOf7MlZqa"
     df_final = pd.read_csv(url, parse_dates=["month"])
     return df_final
 
