@@ -28,15 +28,7 @@ variables_disponibles = [
 variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 rel_variable = f"rel_{variable}_historico"
 
-# ---------- VERIFICAR SI LA COLUMNA HISTÓRICA EXISTE ----------
-if rel_variable not in df.columns:
-    st.warning(f"No se encontró la columna histórica: {rel_variable}. Se calculará por mes globalmente (no ideal).")
-    df["rel_value"] = df.groupby("month")[variable].transform(
-        lambda x: (x - x.mean()) / x.std()
-    )
-    color_col = "rel_value"
-else:
-    color_col = rel_variable
+
 
 # ---------- FORMATO DE FECHA PARA ANIMACIÓN ----------
 df["month_str"] = df["month"].dt.strftime("%Y-%m")
