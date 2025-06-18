@@ -55,7 +55,6 @@ fig = px.scatter_mapbox(
     df_vis,
     lat="latitude",
     lon="longitude",
-    size=variable,
     color=rel_variable,
     animation_frame="month_str",
     hover_name="city_name",
