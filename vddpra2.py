@@ -33,7 +33,7 @@ df["rel_value"] = df.groupby("month")[variable].transform(
 # --- CALCULAR REL_VALUE PERSONALIZADO POR CIUDAD Y MES ---
 df["month_num"] = df["month"].dt.month  # para agrupar solo por mes (sin año)
 
-df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transform(
+df["rel_value_city"] = df.groupby(["city_name", "month"])[variable].transform(
     lambda x: (x - x.mean()) / x.std()
 )
 fig = px.scatter_mapbox(
