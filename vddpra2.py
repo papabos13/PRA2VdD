@@ -41,7 +41,7 @@ fig = px.scatter_mapbox(
     lat="latitude",
     lon="longitude",
     size="rel_value",
-    color="rel_value_city",
+    color=df["rel_value_city"],
     animation_frame=df["month"].dt.strftime("%Y-%m"),
     hover_name="city_name",
     hover_data=["country_name", variable, "rel_value", "rel_value_city"],
@@ -59,6 +59,4 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=False)
 
-st.write("Ejemplo de valores de rel_value_city:")
-st.dataframe(df[["city_name", "month", variable, "rel_value_city"]].dropna().head(10))
 
