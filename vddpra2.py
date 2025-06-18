@@ -31,12 +31,12 @@ rel_variable = f"rel_{variable}_historico"
 # ---------- FILTRADO Y MAPA ----------
 df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
 
-# Mostrar solo variables que tienen su columna rel_ calculada
-variables_disponibles = [
-    var for var in variables_disponibles
-    if f"rel_{var}_historico" in df_final.columns
-]
-
+if rel_variable not in df_final.columns:
+    st.error(f"La columna '{rel_variable}' no existe en el archivo cargado.")
+    st.stop()
+else:
+    # Filtrar solo registros con histórico válido
+    df_vis = df_final.dropna(subset=[rel_variable])
 
 # Crear figura
 fig = px.scatter_mapbox(
