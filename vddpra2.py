@@ -49,6 +49,7 @@ df_vis = df.dropna(subset=[variable, rel_variable])
 if df_vis.empty:
     st.warning("No hay datos suficientes para esta variable.")
     st.stop()
+size_val = df_vis[variable].abs()  # solo para controlar el tamaño del punto
 
 # ---- VISUALIZACIÓN CON PLOTLY ----
 fig = px.scatter_mapbox(
@@ -57,6 +58,7 @@ fig = px.scatter_mapbox(
     lon="longitude",
     color=rel_variable,
     animation_frame="month_str",
+    size=size_val,  # Usamos valores absolutos para el tamaño
     hover_name="city_name",
     hover_data=["country_name", variable, rel_variable],
     color_continuous_scale="RdBu_r",
