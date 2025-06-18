@@ -1,22 +1,28 @@
 
-# -*- coding: utf-8 -*-
+# app.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ---------- CARGAR DATOS ----------
+# ---- CONFIGURACIÓN ----
+st.set_page_config(layout="wide")
+st.title("🌍 Visualización climática histórica por capitales")
+
+# ---- CARGA DE DATOS DESDE GOOGLE DRIVE ----
 @st.cache_data
 def cargar_datos():
-    url = "https://drive.google.com/uc?id=1Yx-oCybcKIe4p2z8kM7nLnEPpUh5-V2x"
+    url = "https://drive.google.com/uc?id=1PumGCVeb9pBb1VdC3Atm9GoLrxybVfh8"  # tu ID de Drive
     df = pd.read_csv(url, parse_dates=["month"])
     return df
 
-df = cargar_datos()
+try:
+    df = cargar_datos()
+except Exception as e:
+    st.error(f"❌ Error al cargar los datos: {e}")
+    st.stop()
 
-# ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Visualización climática por capitales")
-
-variables_disponibles = [
+# ---- VARIABLES DISPONIBLES ----
+variables = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
     "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean",
     "sunrise_avg_min", "sunset_avg_min", "daylight_duration", "sunshine_duration",
@@ -25,18 +31,35 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-variable = st.selectbox("📊 Variable climática:", variables_disponibles)
+# ---- SELECCIÓN DE VARIABLE ----
+variable = st.selectbox("📊 Variable climática:", sorted(variables))
+rel_variable = f"rel_{variable}_historico"
 
+# ---- FILTRO Y FORMATO ----
+if "month" not in df.columns or not pd.api.types.is_datetime64_any_dtype(df["month"]):
+    try:
+        df["month"] = pd.to_datetime(df["month"])
+    except Exception:
+        st.error("❌ Error: la columna 'month' no se puede convertir a fecha.")
+        st.stop()
 
+df["month_str"] = df["month"].dt.strftime("%Y-%m")
+df_vis = df.dropna(subset=[variable, rel_variable])
 
+if df_vis.empty:
+    st.warning("No hay datos suficientes para esta variable.")
+    st.stop()
+
+# ---- VISUALIZACIÓN CON PLOTLY ----
 fig = px.scatter_mapbox(
-    df,
+    df_vis,
     lat="latitude",
     lon="longitude",
-    size=df[variable].abs(),
-    animation_frame=df["month"].dt.strftime("%Y-%m"),
+    size=variable,
+    color=rel_variable,
+    animation_frame="month_str",
     hover_name="city_name",
-    hover_data=["country_name", variable],
+    hover_data=["country_name", variable, rel_variable],
     color_continuous_scale="RdBu_r",
     size_max=15,
     zoom=1
@@ -44,9 +67,10 @@ fig = px.scatter_mapbox(
 
 fig.update_layout(
     mapbox_style="carto-positron",
-    title=f"Evolución temporal de {variable}",
     height=750,
-    width=1100
+    margin={"r":0, "t":40, "l":0, "b":0},
+    title=f"Evolución mensual de {variable}"
 )
 
-st.plotly_chart(fig, use_container_width=False)
+st.plotly_chart(fig, use_container_width=True)
+
