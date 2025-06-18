@@ -1,20 +1,22 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ---------- CARGAR DATOS ----------
+# ---------- CONFIGURACIÓN ----------
+st.set_page_config(page_title="Clima en capitales", layout="wide")
+
+st.title("🌍 Visualización de clima en capitales del mundo")
+
+# ---------- CARGA DE DATOS DESDE GOOGLE DRIVE ----------
 @st.cache_data
 def cargar_datos():
-    url = "https://drive.google.com/uc?id=1wG04qSWqz3wCcck8ozYNyynX4FRvl7Bu"
+    url = "https://drive.google.com/uc?id=1MXhkIsh9Eeq1OEhXuWp8rdiS-TZgR_8n"
     df = pd.read_csv(url, parse_dates=["month"])
     return df
 
 df = cargar_datos()
 
-# ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Visualización climática por capitales")
-
+# ---------- VARIABLES DISPONIBLES ----------
 variables_disponibles = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
     "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean",
@@ -24,32 +26,42 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-variable = st.selectbox("📊 Variable climática:", variables_disponibles)
+# ---------- SELECCIÓN DE VARIABLES Y FECHA ----------
+col1, col2 = st.columns(2)
+with col1:
+    variable = st.selectbox("📊 Selecciona la variable climática", variables_disponibles)
 
-# ---------- NORMALIZAR Y ANIMACIÓN ----------
-df["rel_value"] = df.groupby("month")[variable].transform(
-    lambda x: (x - x.mean()) / x.std()
-)
+with col2:
+    fecha = st.selectbox("📅 Selecciona el mes y año", sorted(df["month"].dt.strftime("%Y-%m").unique()))
 
-fig = px.scatter_mapbox(
-    df,
+# ---------- FILTRADO DE FECHA ----------
+df_fecha = df[df["month"].dt.strftime("%Y-%m") == fecha]
+
+# ---------- LÓGICA DE SIZE ----------
+# Las variables de temperatura que tienen versión shifted_*
+variables_shifted = ["temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
+                     "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean"]
+
+if variable in variables_shifted:
+    size_var = f"shifted_{variable}"
+else:
+    size_var = variable
+
+color_var = f"rel_{variable}"
+
+# ---------- MAPA ----------
+fig = px.scatter_geo(
+    df_fecha,
     lat="latitude",
     lon="longitude",
-    size=df[variable].abs(),
-    color="rel_value",
-    animation_frame=df["month"].dt.strftime("%Y-%m"),
     hover_name="city_name",
-    hover_data=["country_name", variable],
-    color_continuous_scale="RdBu_r",
-    size_max=15,
-    zoom=1
+    size=size_var,
+    color=color_var,
+    color_continuous_scale="RdBu",
+    projection="natural earth",
+    title=f"{variable} en {fecha}",
 )
 
-fig.update_layout(
-    mapbox_style="carto-positron",
-    title=f"Evolución temporal de {variable}",
-    height=750,
-    width=1100
-)
+fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
 
-st.plotly_chart(fig, use_container_width=F
+st.plotly_chart(fig, use_container_width=True)
