@@ -31,8 +31,12 @@ rel_variable = f"rel_{variable}_historico"
 # ---------- FILTRADO Y MAPA ----------
 df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
 
-# Filtrar solo registros con histórico válido
-df_vis = df_final.dropna(subset=[rel_variable])
+# Mostrar solo variables que tienen su columna rel_ calculada
+variables_disponibles = [
+    var for var in variables_disponibles
+    if f"rel_{var}_historico" in df_final.columns
+]
+
 
 # Crear figura
 fig = px.scatter_mapbox(
