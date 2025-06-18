@@ -1,17 +1,19 @@
 import streamlit as st
+import streamlit as st
 import pandas as pd
 import plotly.express as px
 
 # ---------- CONFIGURACIÓN ----------
 st.set_page_config(page_title="Clima en capitales", layout="wide")
-
-st.title("🌍 Visualización de clima en capitales del mundo")
+st.title("🌍 Animación del clima mensual en capitales del mundo")
 
 # ---------- CARGA DE DATOS DESDE GOOGLE DRIVE ----------
 @st.cache_data
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1MXhkIsh9Eeq1OEhXuWp8rdiS-TZgR_8n"
     df = pd.read_csv(url, parse_dates=["month"])
+    # Agregamos columna para animación (formato YYYY-MM)
+    df["fecha_str"] = df["month"].dt.strftime("%Y-%m")
     return df
 
 df = cargar_datos()
@@ -26,21 +28,14 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-# ---------- SELECCIÓN DE VARIABLES Y FECHA ----------
-col1, col2 = st.columns(2)
-with col1:
-    variable = st.selectbox("📊 Selecciona la variable climática", variables_disponibles)
+# ---------- SELECCIÓN DE VARIABLE ----------
+variable = st.selectbox("📊 Selecciona la variable climática", variables_disponibles)
 
-with col2:
-    fecha = st.selectbox("📅 Selecciona el mes y año", sorted(df["month"].dt.strftime("%Y-%m").unique()))
-
-# ---------- FILTRADO DE FECHA ----------
-df_fecha = df[df["month"].dt.strftime("%Y-%m") == fecha]
-
-# ---------- LÓGICA DE SIZE ----------
-# Las variables de temperatura que tienen versión shifted_*
-variables_shifted = ["temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
-                     "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean"]
+# ---------- LÓGICA DE SIZE Y COLOR ----------
+variables_shifted = [
+    "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
+    "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean"
+]
 
 if variable in variables_shifted:
     size_var = f"shifted_{variable}"
@@ -49,19 +44,22 @@ else:
 
 color_var = f"rel_{variable}"
 
-# ---------- MAPA ----------
+# ---------- MAPA CON ANIMACIÓN ----------
 fig = px.scatter_geo(
-    df_fecha,
+    df,
     lat="latitude",
     lon="longitude",
     hover_name="city_name",
     size=size_var,
     color=color_var,
     color_continuous_scale="RdBu",
+    animation_frame="fecha_str",
     projection="natural earth",
-    title=f"{variable} en {fecha}",
+    title=f"Evolución de {variable} mensual (1950–2024)"
 )
 
 fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
 
+# ---------- VISUALIZACIÓN ----------
 st.plotly_chart(fig, use_container_width=True)
+
