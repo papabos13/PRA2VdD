@@ -22,21 +22,28 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
-# ---------- INTERFAZ ----------
 st.title("🌍 Visualización climática histórica por capitales")
 variable = st.selectbox("📊 Variable climática:", sorted(variables_disponibles))
 rel_variable = f"rel_{variable}_historico"
 
-# ---------- VALIDACIÓN ----------
-if variable not in df_final.columns or rel_variable not in df_final.columns:
-    st.error(f"No se encuentran las columnas necesarias: {variable} y/o {rel_variable}.")
+# ---------- VALIDACIONES ----------
+if variable not in df_final.columns:
+    st.error(f"La columna '{variable}' no se encuentra en el dataset.")
     st.stop()
 
-# ---------- FORMATEAR FECHAS Y FILTRAR DATOS ----------
+if rel_variable not in df_final.columns:
+    st.error(f"La columna '{rel_variable}' no se encuentra en el dataset.")
+    st.stop()
+
+# ---------- FORMATO DE FECHAS Y FILTRO ----------
 df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
 df_vis = df_final.dropna(subset=[rel_variable, variable])
 
-# ---------- CREAR MAPA ANIMADO ----------
+if df_vis.empty:
+    st.warning("No hay datos con valores históricos suficientes para esta variable.")
+    st.stop()
+
+# ---------- MAPA ANIMADO ----------
 fig = px.scatter_mapbox(
     df_vis,
     lat="latitude",
