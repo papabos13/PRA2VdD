@@ -37,7 +37,7 @@ df["month_num"] = df["month"].dt.month
 df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transform(
     lambda x: (x - x.mean()) / x.std() if len(x) > 1 and x.std() > 0 else None
 )
-st.write(df[["city_name", "month", variable, "rel_value_city"]].query("rel_value_city.isna()"))
+df["month_str"] = df["month"].dt.strftime("%Y-%m")
 
 
 # ---------- CREAR VISUALIZACIÓN ----------
@@ -46,7 +46,8 @@ fig = px.scatter_mapbox(
     lat="latitude",
     lon="longitude",
     size="rel_value",
-    animation_frame=df["month"].dt.strftime("%Y-%m"),
+    animation_frame="month_str",
+
     hover_name="city_name",
     hover_data=["country_name", variable, "rel_value", "rel_value_city"],
     color="rel_value_city",  # Ahora debería mostrar variación de colores
