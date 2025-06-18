@@ -45,22 +45,20 @@ else:
 color_var = f"rel_{variable}"
 
 # ---------- MAPA CON ANIMACIÓN ----------
-try:
-    fig = px.scatter_geo(
-        df,
-        lat="latitude",
-        lon="longitude",
-        hover_name="city_name",
-        size=size_var,
-        color=color_var,
-        color_continuous_scale="RdBu",
-        animation_frame="fecha_str",
-        projection="natural earth",
-        title=f"Evolución de {variable} mensual (1950–2024)",
-    )
+fig = px.scatter_geo(
+    df,
+    lat="latitude",
+    lon="longitude",
+    hover_name="city_name",
+    size=size_var,
+    color=color_var,
+    color_continuous_scale="RdBu",
+    animation_frame="fecha_str",
+    projection="natural earth",
+    title=f"Evolución de {variable} mensual (1950–2024)"
+)
 
-    fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
-    st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
 
-except Exception as e:
-    st.error(f"❌ Error al generar el gráfico:\n\n{e}")
+# ---------- VISUALIZACIÓN ----------
+st.plotly_chart(fig, use_container_width=True)
