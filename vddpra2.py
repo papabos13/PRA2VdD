@@ -38,25 +38,6 @@ df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transfor
     lambda x: (x - x.mean()) / x.std() if len(x) > 1 and x.std() > 0 else None
 )
 
-with st.expander("🔍 Exploración de rel_value_city"):
-    st.write("📊 Estadísticas básicas:")
-    st.write(df['rel_value_city'].describe())
-
-    st.write("📈 Frecuencia (redondeado a 1 decimal):")
-    st.write(df['rel_value_city'].round(1).value_counts().sort_index())
-
-    st.write("🧮 Valores nulos y ceros:")
-    st.write({
-        "Total registros": len(df),
-        "NaN": df['rel_value_city'].isna().sum(),
-        "Igual a 0": (df['rel_value_city'] == 0).sum(),
-        "Distintos de 0": (df['rel_value_city'] != 0).sum()
-    })
-
-    st.write("🧾 Primeras 10 filas con rel_value_city:")
-    st.dataframe(df[['city_name', 'month', variable, 'rel_value_city']].head(10))
-
-st.dataframe(df[['city_name', 'month', 'rel_value_city']].head(20))
 
 # ---------- CREAR VISUALIZACIÓN ----------
 fig = px.scatter_mapbox(
