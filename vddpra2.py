@@ -36,35 +36,37 @@ with col2:
 capitales = sorted(df["city_name"].dropna().unique())
 ciudad = st.selectbox("🏙️ Selecciona una ciudad", capitales, index=capitales.index("Abidjan"))
 
-# ---------- MAPA GEOCLIMÁTICO ----------
-df_fecha = df[df["month"].dt.to_period("M").astype(str) == fecha_str]
-df_fecha = df_fecha.dropna(subset=["latitude", "longitude", variable, "city_name"])
-
 st.subheader("🌍 Mapa mundial")
-fig_mapa = px.scatter_geo(
-    df_fecha,
-    lat="latitude",
-    lon="longitude",
-    color=variable,
-    size=variable,
-    hover_name="city_name",
-    projection="natural earth",
-    title=f"{variable} en {fecha_str}"
-)
+
+# Asegurarnos de que solo pasamos datos limpios
+df_fecha = df[df["month"].dt.to_period("M").astype(str) == fecha_str]
+df_fecha = df_fecha.dropna(subset=["latitude", "longitude", variable])
+
+# Solo incluir city_name si todas están presentes
+if df_fecha["city_name"].notna().all():
+    fig_mapa = px.scatter_geo(
+        df_fecha,
+        lat="latitude",
+        lon="longitude",
+        color=variable,
+        size=variable,
+        hover_name="city_name",
+        projection="natural earth",
+        title=f"{variable} en {fecha_str}"
+    )
+else:
+    fig_mapa = px.scatter_geo(
+        df_fecha,
+        lat="latitude",
+        lon="longitude",
+        color=variable,
+        size=variable,
+        projection="natural earth",
+        title=f"{variable} en {fecha_str}"
+    )
+
 st.plotly_chart(fig_mapa)
 
-# ---------- GRÁFICO DE EVOLUCIÓN TEMPORAL ----------
-st.subheader(f"📈 Evolución de {variable} en {ciudad}")
-df_ciudad = df[df["city_name"] == ciudad].dropna(subset=[variable])
-
-fig_linea = px.line(
-    df_ciudad,
-    x="month",
-    y=variable,
-    title=f"{variable} mensual en {ciudad}",
-    labels={"month": "Mes", variable: variable},
-)
-st.plotly_chart(fig_linea)
 
 # ---------- ESTADÍSTICAS ----------
 media = df_ciudad[variable].mean()
