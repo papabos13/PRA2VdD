@@ -38,7 +38,7 @@ ciudad = st.selectbox("🏙️ Selecciona una ciudad", capitales, index=capitale
 
 # ---------- MAPA GEOCLIMÁTICO ----------
 df_fecha = df[df["month"].dt.to_period("M").astype(str) == fecha_str]
-df_fecha = df_fecha.dropna(subset=["latitude", "longitude", variable])
+df_fecha = df_fecha.dropna(subset=["latitude", "longitude", variable, "city_name"])
 
 st.subheader("🌍 Mapa mundial")
 fig_mapa = px.scatter_geo(
