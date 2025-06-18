@@ -55,22 +55,63 @@ else:
 # El color será siempre la variable 'rel_' correspondiente (valor relativo)
 color_var = f'rel_{variable}'
 
+# ---------- FORMATEO DE VARIABLES PARA HOVER ----------
+
+# Mostrar fecha en formato MM-YYYY
+df['fecha_europea'] = df['month'].dt.strftime('%m-%Y')
+
+# Nombre legible para mostrar la variable original
+nombre_legible = variable.replace('_', ' ').capitalize()
+
+# Creamos una columna temporal para mostrar en el hover el valor principal
+df['valor_variable'] = df[variable]
+df['valor_rel'] = df[color_var]
+
+# Columnas que sí queremos mostrar al pasar el ratón
+hover_data = {
+    'fecha_europea': True,
+    'city_name': False,  # Ya se muestra como hover_name
+    'country_name': True,
+    'valor_variable': True,
+    'valor_rel': True,
+    'latitude': False,
+    'longitude': False,
+    size_var: False,  # Ocultamos shifted_* si está
+    color_var: False,
+    'month': False,
+    'fecha_str': False
+}
+
 # ---------- ANIMACIÓN GLOBAL ----------
-# Creamos un mapa animado con Plotly Express
 fig = px.scatter_mapbox(
-    df,  # DataFrame con los datos
-    lat='latitude',  # Columna de latitud
-    lon='longitude',  # Columna de longitud
-    hover_name='city_name',  # Nombre que aparece al pasar el ratón
-    size=size_var,  # Tamaño de los puntos (burbuja)
-    color=color_var,  # Color según desviación respecto al histórico
-    animation_frame='fecha_str',  # Variable temporal para animar (meses)
-    size_max=25,  # Tamaño máximo de las burbujas
-    zoom=1,  # Zoom inicial (1 = vista mundial)
-    mapbox_style='open-street-map',  # Estilo del mapa (gratuito)
-    color_continuous_scale='RdBu_r',  # Escala de color invertida: azul = negativo, rojo = positivo
-    title=f'Evolución de {variable} mensual (1950–2024)'  # Título dinámico del gráfico
+    df,
+    lat='latitude',
+    lon='longitude',
+    hover_name='city_name',
+    size=size_var,
+    color=color_var,
+    animation_frame='fecha_str',
+    size_max=25,
+    zoom=1,
+    mapbox_style='open-street-map',
+    color_continuous_scale='RdBu_r',
+    title=f'Evolución de {variable} mensual (1950–2024)',
+    hover_data=hover_data
 )
+
+# Renombramos los campos mostrados para que sean más agradables
+fig.update_traces(
+    hovertemplate=
+        '<b>%{hovertext}</b><br>' +
+        '📅 Fecha: %{customdata[0]}<br>' +
+        '🌍 País: %{customdata[1]}<br>' +
+        f'📈 {nombre_legible}: %{customdata[2]:.2f}<br>' +
+        f'📊 Relativo: %{customdata[3]:.2f}<extra></extra>'
+)
+
+# Ajuste visual del mapa
+fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
+st.plotly_chart(fig, use_container_width=True)
 
 # Ajustamos los márgenes del gráfico y la altura
 fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
