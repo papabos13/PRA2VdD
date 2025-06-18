@@ -57,26 +57,24 @@ color_var = f'rel_{variable}'
 
 # ---------- FORMATEO DE VARIABLES PARA HOVER ----------
 
-# Mostrar fecha en formato MM-YYYY
+# Formato de fecha europeo
 df['fecha_europea'] = df['month'].dt.strftime('%m-%Y')
 
-# Nombre legible para mostrar la variable original
-nombre_legible = variable.replace('_', ' ').capitalize()
-
-# Creamos una columna temporal para mostrar en el hover el valor principal
+# Variable legible para mostrar en el hover
+df['nombre_variable'] = variable.replace('_', ' ').capitalize()
 df['valor_variable'] = df[variable]
 df['valor_rel'] = df[color_var]
 
-# Columnas que sí queremos mostrar al pasar el ratón
+# Columnas que se mostrarán en el hover
 hover_data = {
     'fecha_europea': True,
-    'city_name': False,  # Ya se muestra como hover_name
     'country_name': True,
+    'nombre_variable': True,
     'valor_variable': True,
     'valor_rel': True,
     'latitude': False,
     'longitude': False,
-    size_var: False,  # Ocultamos shifted_* si está
+    size_var: False,
     color_var: False,
     'month': False,
     'fecha_str': False
@@ -99,15 +97,19 @@ fig = px.scatter_mapbox(
     hover_data=hover_data
 )
 
-# Renombramos los campos mostrados para que sean más agradables
+# Hover personalizado usando los campos ya insertados como columnas
 fig.update_traces(
     hovertemplate=
         '<b>%{hovertext}</b><br>' +
         '📅 Fecha: %{customdata[0]}<br>' +
         '🌍 País: %{customdata[1]}<br>' +
-        f'📈 {nombre_legible}: %{customdata[2]:.2f}<br>' +
-        f'📊 Relativo: %{customdata[3]:.2f}<extra></extra>'
+        '📈 %{customdata[2]}: %{customdata[3]:.2f}<br>' +
+        '📊 Relativo: %{customdata[4]:.2f}<extra></extra>'
 )
+
+fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
+st.plotly_chart(fig, use_container_width=True)
+
 
 # Ajuste visual del mapa
 fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
