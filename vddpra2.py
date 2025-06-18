@@ -100,7 +100,7 @@ fig.update_traces(
         '<b>%{hovertext}</b><br>' +
         'Fecha: %{customdata[0]}<br>' +
         'País: %{customdata[1]}<br>' +
-        f'{variable.replace("_", " ").capitalize()}: %{customdata[2]:.2f}<br>' +
+        f'{variable.replace("_", " ").capitalize()}: %{{customdata[2]:.2f}}<br>' +
         'Relativo: %{customdata[3]:.2f}<extra></extra>'
 )
 
