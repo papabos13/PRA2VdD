@@ -26,13 +26,18 @@ var_abs = st.selectbox("Selecciona una variable absoluta", variables_absolutas)
 # Derivar el nombre de la variable relativa correspondiente
 var_rel = f"rel_{var_abs}_historico"
 
+# Convertir a tipo date para evitar errores en st.slider
+df["month"] = pd.to_datetime(df["month"])
+df["month_date"] = df["month"].dt.date  # <- importante para slider
+
 # Selección de fecha
-min_fecha = df["month"].min()
-max_fecha = df["month"].max()
+min_fecha = df["month_date"].min()
+max_fecha = df["month_date"].max()
 fecha = st.slider("Selecciona una fecha", min_value=min_fecha, max_value=max_fecha, value=min_fecha, format="YYYY-MM")
 
-# Filtrar datos por fecha
-df_filtrado = df[df["month"] == fecha].copy()
+# Filtrar datos por fecha seleccionada
+df_filtrado = df[df["month_date"] == fecha].copy()
+
 
 # ---------- VISUALIZACIÓN ----------
 st.subheader(f"{var_abs} en {fecha.strftime('%B %Y')}")
