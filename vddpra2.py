@@ -56,6 +56,7 @@ with st.expander("🔍 Exploración de rel_value_city"):
     st.write("🧾 Primeras 10 filas con rel_value_city:")
     st.dataframe(df[['city_name', 'month', variable, 'rel_value_city']].head(10))
 
+st.dataframe(df[['city_name', 'month', 'rel_value_city']].head(20))
 
 # ---------- CREAR VISUALIZACIÓN ----------
 fig = px.scatter_mapbox(
