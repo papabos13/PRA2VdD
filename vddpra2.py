@@ -24,18 +24,23 @@ variables_disponibles = [
     "shortwave_radiation_sum", "et0_fao_evapotranspiration"
 ]
 
+# Selector de variable
 variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 rel_variable = f"rel_{variable}_historico"
 
-# ---------- CREAR MAPA ----------
+# ---------- FILTRADO Y MAPA ----------
 df_final["month_str"] = df_final["month"].dt.strftime("%Y-%m")
 
+# Filtrar solo registros con histórico válido
+df_vis = df_final.dropna(subset=[rel_variable])
+
+# Crear figura
 fig = px.scatter_mapbox(
-    df_final,
+    df_vis,
     lat="latitude",
     lon="longitude",
     color=rel_variable,
-    size=df_final[variable].abs(),
+    size=df_vis[variable].abs(),
     animation_frame="month_str",
     hover_name="city_name",
     hover_data=["country_name", variable],
@@ -52,3 +57,4 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=False)
+
