@@ -49,5 +49,4 @@ fig = px.scatter_geo(
     title=f"{var_abs} con color relativo {var_rel}" if var_rel in df.columns else f"{var_abs} sin color relativo",
 )
 
-st.plotly_chart(fig, use_containe
-
+st.plotly_chart(fig, use_container_width=True)
