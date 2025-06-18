@@ -56,16 +56,13 @@ color_var = f'rel_{variable}'
 
 # ---------- FORMATEO DE VARIABLES PARA HOVER ----------
 
-# Creamos un formato de fecha europeo
-df['fecha_europea'] = df['month'].dt.strftime('%m-%Y')
-
 # Creamos una columna con el valor de la variable seleccionada
 df['valor_variable'] = df[variable]
 df['valor_rel'] = df[color_var]
 
 # Diccionario con las columnas que se mostrarán en el hover
 hover_data = {
-    'fecha_europea': True,
+    'Fecha':True,
     'country_name': True,
     'valor_variable': True,
     'valor_rel': True,
@@ -74,7 +71,6 @@ hover_data = {
     size_var: False,
     color_var: False,
     'month': False,
-    'fecha_str': False
 }
 
 # ---------- ANIMACIÓN GLOBAL ----------
