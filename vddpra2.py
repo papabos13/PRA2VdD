@@ -30,13 +30,18 @@ variable = st.selectbox("📊 Variable climática:", variables_disponibles)
 df["rel_value"] = df.groupby("month")[variable].transform(
     lambda x: (x - x.mean()) / x.std()
 )
+# --- CALCULAR REL_VALUE PERSONALIZADO POR CIUDAD Y MES ---
+df["month_num"] = df["month"].dt.month  # para agrupar solo por mes (sin año)
 
+df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transform(
+    lambda x: (x - x.mean()) / x.std()
+)
 fig = px.scatter_mapbox(
     df,
     lat="latitude",
     lon="longitude",
-    size=df[variable].abs(),
-    color="rel_value",
+    size="rel_value",
+    color="rel_value_city",
     animation_frame=df["month"].dt.strftime("%Y-%m"),
     hover_name="city_name",
     hover_data=["country_name", variable],
