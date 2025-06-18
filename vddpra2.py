@@ -8,8 +8,6 @@ import plotly.express as px
 def cargar_datos():
     url = "https://drive.google.com/uc?id=1Yx-oCybcKIe4p2z8kM7nLnEPpUh5-V2x"
     df = pd.read_csv(url)
-    df["month"] = pd.to_datetime(df["month"])
-
 
     # Validación de columna 'month'
     if 'month' not in df.columns:
