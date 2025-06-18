@@ -40,6 +40,19 @@ df["rel_value_city"] = df.groupby(["city_name", "month_day"])[variable].transfor
     lambda x: (x - x.mean()) / x.std() if len(x) > 1 and x.std() > 0 else 0
 )
 
+
+# DEBUG: Mostrar estadísticas
+st.write("### DEBUG - Estadísticas de rel_value_city:")
+st.write(f"Min: {df['rel_value_city'].min()}")
+st.write(f"Max: {df['rel_value_city'].max()}")
+st.write(f"Valores únicos: {df['rel_value_city'].nunique()}")
+st.write(f"Valores diferentes de 0: {(df['rel_value_city'] != 0).sum()}")
+st.write(f"Total registros: {len(df)}")
+
+# DEBUG: Mostrar algunos valores
+st.write("### Primeras 10 filas:")
+st.write(df[['city_name', 'month', 'month_day', variable, 'rel_value_city']].head(10))
+
 # ---------- CREAR VISUALIZACIÓN ----------
 fig = px.scatter_mapbox(
     df,
