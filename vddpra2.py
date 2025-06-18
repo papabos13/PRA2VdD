@@ -1,4 +1,3 @@
-    url = "https://drive.google.com/uc?id=1PumGCVeb9pBb1VdC3Atm9GoLrxybVfh8"  # tu ID de Drive
 
 # -*- coding: utf-8 -*-
 import streamlit as st
