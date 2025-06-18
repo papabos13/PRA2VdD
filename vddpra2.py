@@ -45,7 +45,7 @@ fig = px.scatter_mapbox(
     df,
     lat="latitude",
     lon="longitude",
-    size="rel_value",
+    size="rel_value_city",    
     animation_frame="month_str",
 
     hover_name="city_name",
