@@ -77,5 +77,32 @@ fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0}, height=1000)
 # Mostramos el gráfico dentro de la aplicación Streamlit
 st.plotly_chart(fig, use_container_width=True)
 
+# ---------- EXPLICACIÓN DE VARIABLES ----------
+# Diccionario con descripciones breves (modifícalo o amplíalo a tu gusto)
+descripciones = {
+    'temperature_2m_max': 'Temperatura máxima a 2 m sobre el suelo (°C).',
+    'temperature_2m_min': 'Temperatura mínima a 2 m sobre el suelo (°C).',
+    'temperature_2m_mean': 'Temperatura media a 2 m sobre el suelo (°C).',
+    'apparent_temperature_max': 'Temperatura aparente (sensación térmica) máxima (°C).',
+    'apparent_temperature_min': 'Temperatura aparente mínima (°C).',
+    'apparent_temperature_mean': 'Temperatura aparente media (°C).',
+    'sunrise_avg_min': 'Hora media (en minutos) del amanecer en el mes.',
+    'sunset_avg_min': 'Hora media (en minutos) del atardecer en el mes.',
+    'daylight_duration': 'Duración total de luz diurna (segundos).',
+    'sunshine_duration': 'Horas de sol directo registradas (segundos).',
+    'precipitation_sum': 'Precipitación total mensual (mm).',
+    'rain_sum': 'Lluvia total mensual (mm).',
+    'snowfall_sum': 'Nieve total mensual (mm).',
+    'precipitation_hours': 'Horas con precipitación en el mes.',
+    'wind_speed_10m_max': 'Velocidad máxima del viento a 10 m (m/s).',
+    'wind_gusts_10m_max': 'Ráfagas máximas de viento a 10 m (m/s).',
+    'wind_direction_10m_dominant': 'Dirección dominante del viento a 10 m (grados).',
+    'shortwave_radiation_sum': 'Radiación solar de onda corta acumulada (Wh/m²).',
+    'et0_fao_evapotranspiration': 'Evapotranspiración potencial FAO (mm).'
+}
+
+with st.expander('ℹ️  Descripción de la variable seleccionada'):
+    descripcion = descripciones.get(variable, 'Descripción no disponible.')
+    st.markdown(f'**{variable}**: {descripcion}')
 
 
