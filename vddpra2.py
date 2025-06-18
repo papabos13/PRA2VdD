@@ -6,17 +6,17 @@ import plotly.express as px
 # ---------- CARGAR DATOS ----------
 @st.cache_data
 def cargar_datos():  
-    url = "https://drive.google.com/uc?id=1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"
-    df = pd.read_csv(url)
-    
-    if "month" not in df.columns:
-        st.error("❌ La columna 'month' no se encuentra en el archivo cargado.")
-        st.stop()
-
-    df["month"] = pd.to_datetime(df["month"])  # ahora sí
-    return df
+    url = "https://drive.google.com/uc?id=1sa1-XvDrsYfXgA8_tY4-lt1OPeodC2s-"  # tu ID de archivo
+    try:
+        df_final = pd.read_csv(url)
+        df_final["month"] = pd.to_datetime(df_final["month"])
+        return df_final
+    except Exception as e:
+        st.error(f"❌ Error al cargar los datos: {e}")
+        return pd.DataFrame()
 
 df_final = cargar_datos()
+
 
 # ---------- VARIABLES DISPONIBLES ----------
 variables_disponibles = [
