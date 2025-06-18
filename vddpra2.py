@@ -37,6 +37,7 @@ df["month_num"] = df["month"].dt.month
 df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transform(
     lambda x: (x - x.mean()) / x.std() if len(x) > 1 and x.std() > 0 else None
 )
+st.write(df[["city_name", "month", variable, "rel_value_city"]].query("rel_value_city.isna()"))
 
 
 # ---------- CREAR VISUALIZACIÓN ----------
