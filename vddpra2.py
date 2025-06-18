@@ -1,69 +1,52 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ---------- CARGAR DATOS ----------
+# ---------- CARGA DE DATOS DESDE DRIVE ----------
 @st.cache_data
 def cargar_datos():
-    url = "https://drive.google.com/uc?id=1wG04qSWqz3wCcck8ozYNyynX4FRvl7Bu"
+    url = "https://drive.google.com/uc?id=1W3py6RlU9x0q97DRJLDLwYBzHSwDT0M-"
     df = pd.read_csv(url, parse_dates=["month"])
     return df
 
 df = cargar_datos()
 
-# ---------- TÍTULO Y VARIABLE ----------
-st.title("🌍 Visualización climática por capitales")
+# ---------- INTERFAZ ----------
+st.title("🌍 Visualización interactiva de temperaturas en capitales")
 
-variables_disponibles = [
+# Variables base
+temp_vars = [
     "temperature_2m_max", "temperature_2m_min", "temperature_2m_mean",
-    "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean",
-    "sunrise_avg_min", "sunset_avg_min", "daylight_duration", "sunshine_duration",
-    "precipitation_sum", "rain_sum", "snowfall_sum", "precipitation_hours",
-    "wind_speed_10m_max", "wind_gusts_10m_max", "wind_direction_10m_dominant",
-    "shortwave_radiation_sum", "et0_fao_evapotranspiration"
+    "apparent_temperature_max", "apparent_temperature_min", "apparent_temperature_mean"
 ]
 
-variable = st.selectbox("📊 Variable climática:", variables_disponibles)
+# Selector de variable de temperatura base
+variable = st.selectbox("Selecciona la variable de temperatura base", temp_vars)
 
-# ---------- NORMALIZAR Y ANIMACIÓN ----------
-df["rel_value"] = df.groupby("month")[variable].transform(
-    lambda x: (x - x.mean()) / x.std()
-)
+# Columnas relativas
+col_size = f"rel_{variable}_global"
+col_color = f"rel_{variable}_city"
 
-# --- OPCIÓN 3: ANOMALÍA RESPECTO AL PROMEDIO HISTÓRICO DE CADA CIUDAD POR MES ---
-df["month_num"] = df["month"].dt.month
+# Selector de fecha (año-mes)
+fechas_disponibles = df["month"].dt.to_period("M").drop_duplicates().astype(str)
+fecha_str = st.selectbox("Selecciona una fecha (AAAA-MM)", fechas_disponibles)
 
-df["rel_value_city"] = df.groupby(["city_name", "month_num"])[variable].transform(
-    lambda x: (x - x.mean()) / x.std() if len(x) > 1 and x.std() > 0 else None
-)
-df["month_str"] = df["month"].dt.strftime("%Y-%m")
+# Filtrar por la fecha seleccionada
+fecha_period = pd.Period(fecha_str, freq="M")
+df_filtrado = df[df["month"].dt.to_period("M") == fecha_period]
 
-
-# ---------- CREAR VISUALIZACIÓN ----------
-fig = px.scatter_mapbox(
-    df,
+# ---------- MAPA ----------
+fig = px.scatter_geo(
+    df_filtrado,
     lat="latitude",
     lon="longitude",
-    size="rel_value_city",    
-    animation_frame="month_str",
-
     hover_name="city_name",
-    hover_data=["country_name", variable, "rel_value", "rel_value_city"],
-    color="rel_value_city",  # Ahora debería mostrar variación de colores
-    color_continuous_scale="RdBu_r",
-    size_max=15,
-    zoom=1,
-    range_color=[-3, 3]  # Fijar rango de colores para mejor visualización
+    hover_data=[variable, col_size, col_color],
+    size=col_size,
+    color=col_color,
+    projection="natural earth",
+    title=f"{variable} — {fecha_str}",
 )
 
-fig.update_layout(
-    mapbox_style="carto-positron",
-    title=f"Evolución temporal de {variable}",
-    height=750,
-    width=1100
-)
-
-st.plotly_chart(fig, use_container_width=False)
-
+st.plotly_chart(fig, use_container_width=True)
 
